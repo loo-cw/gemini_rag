@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-def query_rag_api(base_url, temperature, k, index_type, manual_keywords, user_query, history_limit):
+def query_rag_api(base_url, temperature, k, chunk_overlap, rerank_k, index_type, manual_keywords, user_query, history_limit):
   """
   Query the Gemini RAG API with user-provided parameters
   """
@@ -36,6 +36,8 @@ def query_rag_api(base_url, temperature, k, index_type, manual_keywords, user_qu
         json={
             "temperature": temperature,
             "k": k,
+            "chunk_overlap": chunk_overlap,
+            "rerank_k": rerank_k,
             "index_type": index_type
         }
     )
@@ -92,6 +94,8 @@ st.title("Gemini RAG API Client")
 base_url = st.text_input("Base URL", "https://your-api-url.here")
 temperature = st.slider("Temperature", 0.0, 1.0, 0.2)
 k = st.number_input("Number of Documents to Retrieve (k)", min_value=1, max_value=20, value=5)
+chunk_overlap = st.number_input("Chunk Overlap", min_value=0, max_value=50, value=10)
+rerank_k = st.number_input("Rerank k", min_value=1, max_value=20, value=5)
 index_type = st.selectbox("Index Type", options=["rerank", "basic"])
 manual_keywords = st.text_input("Manual Keywords (comma-separated)")
 user_query = st.text_area("User Query", "Enter your query, e.g., 'What are the tax regulations in Malaysia?'")
