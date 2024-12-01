@@ -116,4 +116,4 @@ manual_keywords_list = [kw.strip() for kw in manual_keywords.split(",") if kw.st
 
 # Button to trigger API call
 if st.button("Send Query"):
-    query_rag_api(base_url, temperature, k, index_type, manual_keywords_list, user_query, history_limit)
+    query_rag_api(base_url, temperature, k, chunk_overlap, rerank_k, index_type, manual_keywords, user_query, history_limit)
