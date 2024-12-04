@@ -101,8 +101,15 @@ base_url = st.text_input("Base URL", "https://your-api-url.here")
 temperature = st.slider("Temperature", 0.0, 1.0, 0.1)
 k = st.number_input("Number of Documents to Retrieve (k): Max 20", min_value=1, max_value=20, value=5)
 chunk_overlap = st.number_input("Chunk Overlap (Max 50)", min_value=0, max_value=50, value=10)
-rerank_k = st.number_input("Rerank k (Max 20)", min_value=1, max_value=20, value=5)
+
+# index_type and rerank_k
 index_type = st.selectbox("Index Type", options=["rerank", "basic"])
+if index_type == "rerank":
+  rerank_k = st.number_input("Rerank k (Max 20)", min_value=1, max_value=20, value=5)
+else:
+  rerank_k = None # No rerank_k is needed for basic indexing
+  st.info("Rerank k is not applicable for basic indexing.")
+
 manual_keywords = st.text_input("Manual Keywords (comma-separated)")
 user_query = st.text_area("User Query", "Enter your query, e.g., 'What are the tax regulations in Malaysia?'")
 show_history = st.checkbox("Show Conversation History", value=True)
