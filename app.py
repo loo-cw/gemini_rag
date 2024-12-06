@@ -190,6 +190,8 @@ def main():
                 for i, doc in enumerate(result.get('retrieved_documents', []), 1):
                     st.write(f"**Document {i}:**")
                     st.write(f"Source: {doc.get('source', 'Unknown')}")
+                    st.write(f"Similarity Score: {doc.get('similarity_score', 'N/A')}")
+                    st.write(f"Keywords: {', '.join(doc.get('keywords', []))}")
                     st.write(f"Content Preview: {doc.get('content_preview', 'No preview')}")
             
             # Retrieve conversation history if enabled
