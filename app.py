@@ -1,13 +1,14 @@
 import streamlit as st
 import requests
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
 
-executor = ThreadPoolExecutor()
+executor = ThreadPoolExecutor(max_workers=3)
 
-def async_request(url, json_data=None, method="POST"):
+def async_request(url, json_data=None, method="POST", timeout=240):
   if method == "POST":
-    return requests.post(url, json=json_data, timeout=240)
-  return requests.get(url, timeout=240) 
+    return requests.post(url, json=json_data, timeout=timeout)
+  return requests.get(url, timeout=timeout) 
 
 def query_rag_api(base_url, temperature, k, chunk_overlap, rerank_k, index_type, manual_keywords, user_query, history_limit):
   """
@@ -36,26 +37,43 @@ def query_rag_api(base_url, temperature, k, chunk_overlap, rerank_k, index_type,
     except requests.RequestException as e:
       st.error(f"Failed to add manual keywords: {e}")
 
-  # Set parameters
+  # Set parameters with improved error handling
   st.text("Setting parameters...")
-  future = executor.submit(
-    async_request,
-    f"{base_url}/set-parameters",
-    json_data={
-      "temperature": temperature,
-      "k": k,
-      "chunk_overlap": chunk_overlap,
-      "rerank_k": rerank_k,
-      "index_type": index_type
-    }
-  )
   try:
-    params_response = future.result()
+    # Use a shorter timeout for initial request
+    params_response = requests.post(
+      f"{base_url}/set-parameters",
+      json={
+        "temperature": temperature,
+        "k": k,
+        "chunk_overlap": chunk_overlap,
+        "rerank_k": rerank_k,
+        "index_type": index_type
+      },
+      timeout=60  # Shorter, more reasonable timeout
+    )
     params_response.raise_for_status()
     st.success(f"Parameters Update: {params_response.json()}")
-  except requests.RequestException as e:
-    st.error(f"Failed to update parameters: {e}")
-  return
+  except requests.Timeout:
+    st.warning("Parameter setting timed out. Retrying with longer timeout...")
+    try:
+      # Retry with a much longer timeout
+      params_response = requests.post(
+        f"{base_url}/set-parameters",
+        json={
+          "temperature": temperature,
+          "k": k,
+          "chunk_overlap": chunk_overlap,
+          "rerank_k": rerank_k,
+          "index_type": index_type
+        },
+        timeout=240  # Extended timeout
+      )
+      params_response.raise_for_status()
+      st.success(f"Parameters Update: {params_response.json()}")
+    except requests.RequestException as e:
+      st.error(f"Failed to update parameters after retry: {e}")
+      return
 
   # Send query with detailed retrieval
   st.text("Sending query...")
