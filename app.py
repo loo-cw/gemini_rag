@@ -5,9 +5,9 @@ from concurrent.futures import ThreadPoolExecutor
 executor = ThreadPoolExecutor()
 
 def async_request(url, json_data=None, method="POST"):
-    if method == "POST":
-        return requests.post(url, json=json_data, timeout=120)
-    return requests.get(url, timeout=120) 
+  if method == "POST":
+    return requests.post(url, json=json_data, timeout=120)
+  return requests.get(url, timeout=120) 
 
 def query_rag_api(base_url, temperature, k, chunk_overlap, rerank_k, index_type, manual_keywords, user_query, history_limit):
   """
@@ -39,23 +39,23 @@ def query_rag_api(base_url, temperature, k, chunk_overlap, rerank_k, index_type,
   # Set parameters
   st.text("Setting parameters...")
   future = executor.submit(
-        async_request,
-        f"{base_url}/set-parameters",
-        json_data={
-            "temperature": temperature,
-            "k": k,
-            "chunk_overlap": chunk_overlap,
-            "rerank_k": rerank_k,
-            "index_type": index_type
-        }
-    )
-    try:
-        params_response = future.result()
-        params_response.raise_for_status()
-        st.success(f"Parameters Update: {params_response.json()}")
-    except requests.RequestException as e:
-        st.error(f"Failed to update parameters: {e}")
-    return
+    async_request,
+    f"{base_url}/set-parameters",
+    json_data={
+      "temperature": temperature,
+      "k": k,
+      "chunk_overlap": chunk_overlap,
+      "rerank_k": rerank_k,
+      "index_type": index_type
+    }
+  )
+  try:
+    params_response = future.result()
+    params_response.raise_for_status()
+    st.success(f"Parameters Update: {params_response.json()}")
+  except requests.RequestException as e:
+    st.error(f"Failed to update parameters: {e}")
+  return
 
   # Send query with detailed retrieval
   st.text("Sending query...")
