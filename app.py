@@ -33,7 +33,7 @@ def set_api_parameters(base_url, params):
                 "rerank_k": params['rerank_k'],
                 "index_type": params['index_type']
             },
-            timeout=60
+            timeout=240
         )
         response.raise_for_status()
         return response.json()
