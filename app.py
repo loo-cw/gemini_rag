@@ -39,7 +39,8 @@ def query_rag_api(base_url, temperature, k, chunk_overlap, rerank_k, index_type,
             "chunk_overlap": chunk_overlap,
             "rerank_k": rerank_k,
             "index_type": index_type
-        }
+        },
+        timeout=120  # Set a custom timeout (e.g., 120 seconds)
     )
     params_response.raise_for_status()
     st.success(f"Parameters Update: {params_response.json()}")
