@@ -6,8 +6,8 @@ executor = ThreadPoolExecutor()
 
 def async_request(url, json_data=None, method="POST"):
   if method == "POST":
-    return requests.post(url, json=json_data, timeout=120)
-  return requests.get(url, timeout=120) 
+    return requests.post(url, json=json_data, timeout=240)
+  return requests.get(url, timeout=240) 
 
 def query_rag_api(base_url, temperature, k, chunk_overlap, rerank_k, index_type, manual_keywords, user_query, history_limit):
   """
